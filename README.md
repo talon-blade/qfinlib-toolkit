@@ -16,6 +16,11 @@ Suite of qfinlib-backed Dash tools covering market monitoring, trade pricing, an
    If you prefer calling Compose directly, use `docker compose up --build` (Docker Desktop) or
    `docker-compose up --build` (legacy binary).
 
+   **If you see "Docker Compose not found":**
+   - Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) (includes the Compose plugin) and start the Docker app.
+   - Or install the legacy binary with Homebrew: `brew install docker-compose` (macOS) or `pip install docker-compose`.
+   - Confirm with `docker compose version` or `docker-compose version` before re-running `./compose.sh`.
+
 
 2. Open the portal (or run the launcher script to open it automatically):
    ```bash
