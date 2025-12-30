@@ -16,6 +16,7 @@ Suite of qfinlib-backed Dash tools covering market monitoring, trade pricing, an
    If you prefer calling Compose directly, use `docker compose up --build` (Docker Desktop) or
    `docker-compose up --build` (legacy binary).
 
+
 2. Open the portal (or run the launcher script to open it automatically):
    ```bash
    python launch.py
