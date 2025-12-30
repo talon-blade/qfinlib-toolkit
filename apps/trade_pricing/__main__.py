@@ -74,4 +74,4 @@ def update_price(spot: float, strike: float, vol: float, rate: float, tenor: flo
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "8052"))
-    app.run_server(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False)
