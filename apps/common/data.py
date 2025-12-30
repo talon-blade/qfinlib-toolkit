@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import importlib.util
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import date, datetime
 from typing import Optional
 
 import numpy as np
@@ -14,41 +14,73 @@ qfinlib = importlib.util.module_from_spec(_spec) if _spec else None
 if _spec and _spec.loader:
     _spec.loader.exec_module(qfinlib)
 
+try:
+    from qfinlib.market.container import MarketContainer
+    from qfinlib.market.data.loader import DataLoader
+    from qfinlib.market.data.random_provider import RandomMarketDataProvider
+except Exception:  # pragma: no cover - import fallback when qfinlib missing
+    MarketContainer = None
+    DataLoader = None
+    RandomMarketDataProvider = None
 
-def _random_walk(periods: int, start: float = 100.0, seed: Optional[int] = None) -> pd.Series:
+_provider = RandomMarketDataProvider(seed=42) if RandomMarketDataProvider else None
+_loader = DataLoader(_provider) if _provider and DataLoader else None
+
+
+def _market_snapshot(as_of: Optional[date] = None) -> Optional[MarketContainer]:
+    """Build a qfinlib MarketContainer when dependencies are present."""
+
+    if not _loader:
+        return None
+
+    return _loader.load(as_of=as_of)
+
+
+def _geometric_brownian_walk(periods: int, start: float, drift: float, vol: float, seed: Optional[int]) -> pd.Series:
     rng = np.random.default_rng(seed)
-    steps = rng.normal(loc=0.0005, scale=0.02, size=periods)
-    return pd.Series(start * np.exp(np.cumsum(steps)))
+    dt = 1 / 252
+    increments = rng.normal((drift - 0.5 * vol**2) * dt, vol * np.sqrt(dt), size=periods)
+    return pd.Series(start * np.exp(np.cumsum(increments)))
 
 
 def load_equity_history(symbol: str, periods: int = 120) -> pd.DataFrame:
     """Return an equity history for monitoring.
 
-    If qfinlib is available, attempts to use its market data adapters; otherwise
-    falls back to a simple random walk so the dashboards still render in
+    When qfinlib is available, synthesize the path from its market data
+    primitives (rates drive drift, vol surfaces drive variance). Otherwise
+    fall back to a deterministic random walk so the dashboards still render in
     isolated environments.
     """
 
-    if qfinlib:
-        market_loader = getattr(qfinlib, "marketdata", None) or getattr(qfinlib, "data", None)
-        if market_loader and hasattr(market_loader, "load_ohlcv"):
-            end = datetime.utcnow()
-            start = end - timedelta(days=periods)
-            df = market_loader.load_ohlcv(symbol=symbol, start=start, end=end)
-            return df
-
+    market = _market_snapshot()
     idx = pd.date_range(end=datetime.utcnow(), periods=periods, freq="D")
-    series = _random_walk(periods=periods, seed=len(symbol))
+
+    if market:
+        drift = float(market.data.get("forward_rate", market.data.get("discount_rate", 0.01)))
+        vol = float(market.data.get("volatility", 0.2))
+        start = float(market.data.get("fx_rates", {}).get("spot", 100.0)) * 100.0
+        series = _geometric_brownian_walk(periods=periods, start=start, drift=drift, vol=vol, seed=len(symbol))
+        return pd.DataFrame({"close": series.values}, index=idx)
+
+    series = _geometric_brownian_walk(periods=periods, start=100.0, drift=0.01, vol=0.2, seed=len(symbol))
     return pd.DataFrame({"close": series.values}, index=idx)
 
 
 def load_option_surface(spot: float, maturities: list[int], strikes: list[float]) -> pd.DataFrame:
-    """Generate a simple implied-vol surface or reuse qfinlib if present."""
-    if qfinlib:
-        pricing = getattr(qfinlib, "pricing", None)
-        surface_builder = getattr(pricing, "implied_vol_surface", None) if pricing else None
-        if surface_builder:
-            return surface_builder(spot=spot, maturities=maturities, strikes=strikes)
+    """Generate a simple implied-vol surface or reuse qfinlib market surfaces."""
+
+    market = _market_snapshot()
+    vol_surface_name = getattr(_provider, "vol_surface_name", "vol_surface")
+    if market:
+        surface = market.get_surface(vol_surface_name)
+        if surface:
+            rows = []
+            for t in maturities:
+                expiry = t / 365
+                for k in strikes:
+                    vol = float(surface(expiry, k, spot))
+                    rows.append({"maturity": t, "strike": k, "vol": vol})
+            return pd.DataFrame(rows)
 
     rows = []
     for t in maturities:
