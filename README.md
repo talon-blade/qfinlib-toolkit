@@ -21,6 +21,7 @@ Suite of qfinlib-backed Dash tools covering market monitoring, trade pricing, an
    - Or install the legacy binary with Homebrew: `brew install docker-compose` (macOS) or `pip install docker-compose`.
    - Confirm with `docker compose version` or `docker-compose version` before re-running `./compose.sh`.
 
+
 2. Open the portal (or run the launcher script to open it automatically):
    ```bash
    python launch.py
