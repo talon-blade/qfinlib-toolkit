@@ -1,0 +1,7 @@
+qfinlib
+pandas
+numpy
+dash
+plotly
+scipy
+gunicorn
