@@ -18,6 +18,26 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Enforce version bump on PRs
+        if: github.event_name == 'pull_request'
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "${{ github.base_ref }}"
+          BASE_VERSION=$(git show "origin/${{ github.base_ref }}:pyproject.toml" | sed -n 's/^version = "\([^"]*\)"$/\1/p')
+          HEAD_VERSION=$(sed -n 's/^version = "\([^"]*\)"$/\1/p' pyproject.toml)
+
+          if [ -z "$BASE_VERSION" ] || [ -z "$HEAD_VERSION" ]; then
+            echo "Unable to read package versions from pyproject.toml"
+            exit 1
+          fi
+
+          if [ "$BASE_VERSION" = "$HEAD_VERSION" ]; then
+            echo "PRs must bump project.version in pyproject.toml (base=$BASE_VERSION, head=$HEAD_VERSION)."
+            exit 1
+          fi
+
+          echo "Version bump detected: $BASE_VERSION -> $HEAD_VERSION"
+
       - name: Install package
         run: |
           python -m pip install --upgrade pip
