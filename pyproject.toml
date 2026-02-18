@@ -24,6 +24,7 @@ dependencies = [
 Homepage = "https://github.com/example/qfinlib-toolkit"
 
 [project.scripts]
+"qfinlib-toolkit" = "apps.cli:main"
 "qfinlib-toolkit.portal" = "apps.portal.__main__:main"
 "qfinlib-toolkit.market-monitor" = "apps.market_monitor.__main__:main"
 "qfinlib-toolkit.market-monitor.swap-rate-monitor" = "apps.market_monitor.swap_rate_monitor:main"

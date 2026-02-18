@@ -10,7 +10,15 @@ pip install qfinlib-toolkit
 
 ## Launch dashboards from CLI
 
-After install, each dashboard can be started directly as a command:
+After install, you can browse available dashboards interactively:
+
+```bash
+qfinlib-toolkit -browse
+```
+
+The browser supports ↑/↓ keys and Enter to launch the selected app.
+
+You can also start each dashboard directly as a command:
 
 ```bash
 qfinlib-toolkit.portal
@@ -19,6 +27,9 @@ qfinlib-toolkit.market-monitor.swap-rate-monitor
 qfinlib-toolkit.trade-pricing
 qfinlib-toolkit.strategy-lab
 ```
+
+When command usage fails (for example, unsupported flags), the CLI prints a hint to use
+`qfinlib-toolkit -browse` or `qfinlib-toolkit --help`.
 
 ### Swap Rate Monitor (new)
 
