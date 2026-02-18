@@ -1,49 +1,46 @@
-# qfinlib Dash Toolkit
+# qfinlib Toolkit
 
-Suite of qfinlib-backed Dash tools covering market monitoring, trade pricing, and fast strategy experimentation. The stack is fully dockerized and ships with a simple launcher that opens the portal entry point.
+A pip-installable set of qfinlib-backed Dash dashboards for market monitoring, pricing, and strategy experimentation.
 
-## Contents
-- **Portal (port 8050):** landing page that links to each tool.
-- **Market Monitor (port 8051):** lightweight market overview driven by qfinlib market data adapters.
-- **Trade Pricing (port 8052):** vanilla option pricing plus implied-vol surface sketch.
-- **Strategy Lab (port 8053):** moving-average crossover backtester.
+## Install
 
-## Getting started
-1. Build and start the stack (uses either `docker compose` or `docker-compose` automatically):
-   ```bash
-   ./compose.sh up --build
-   ```
-   If you prefer calling Compose directly, use `docker compose up --build` (Docker Desktop) or
-   `docker-compose up --build` (legacy binary).
-
-   **If you see "Docker Compose not found":**
-   - Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) (includes the Compose plugin) and start the Docker app.
-   - Or install the legacy binary with Homebrew: `brew install docker-compose` (macOS) or `pip install docker-compose`.
-   - Confirm with `docker compose version` or `docker-compose version` before re-running `./compose.sh`.
-
-
-2. Open the portal (or run the launcher script to open it automatically):
-   ```bash
-   python launch.py
-   ```
-   The portal lives at http://localhost:8050 by default.
-
-3. Navigate to each tool from the portal cards. Ports can be customized in `docker-compose.yml` if needed.
-
-## Running a single app locally (without Docker)
-Activate a virtual environment, install `requirements.txt`, then run a module directly, e.g.:
 ```bash
-python -m apps.market_monitor
+pip install qfinlib-toolkit
 ```
 
-## Packaging a desktop launcher
-If you need a Windows `.exe` launcher, build one from `launch.py` with `pyinstaller`:
-```bash
-pip install pyinstaller
-pyinstaller --onefile launch.py
-```
-The generated binary simply opens the portal URL once the Docker services are running.
+## Launch dashboards from CLI
 
-## Customization notes
-- Swap the placeholder data generators in `apps/common/data.py` with your preferred qfinlib adapters for production feeds.
-- The shared `Dockerfile` accepts `APP_MODULE` and `PORT` build args/env vars so you can run any module with the same base image.
+After install, each dashboard can be started directly as a command:
+
+```bash
+qfinlib-toolkit.portal
+qfinlib-toolkit.market-monitor
+qfinlib-toolkit.market-monitor.swap-rate-monitor
+qfinlib-toolkit.trade-pricing
+qfinlib-toolkit.strategy-lab
+```
+
+### Swap Rate Monitor (new)
+
+`qfinlib-toolkit.market-monitor.swap-rate-monitor` launches a dedicated swap-curve dashboard (default port `8061`).
+
+## Local development
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -U pip build
+pip install -e .
+python -m build
+```
+
+## CI/CD release publishing
+
+GitHub Actions is configured so that every pushed tag matching `v*` builds the package and publishes it to PyPI (using `PYPI_API_TOKEN` repository secret).
+
+Example:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
