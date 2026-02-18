@@ -7,7 +7,6 @@ from typing import Callable
 
 from apps.market_monitor.__main__ import main as market_monitor_main
 from apps.market_monitor.swap_rate_monitor import main as swap_rate_monitor_main
-from apps.portal.__main__ import main as portal_main
 from apps.strategy_lab.__main__ import main as strategy_lab_main
 from apps.trade_pricing.__main__ import main as trade_pricing_main
 
@@ -22,14 +21,8 @@ class DashboardApp:
 
 DASHBOARDS = [
     DashboardApp(
-        name="Portal",
-        command="qfinlib-toolkit.portal",
-        description="Launch toolkit portal dashboard (port 8050).",
-        runner=portal_main,
-    ),
-    DashboardApp(
         name="Market Monitor",
-        command="qfinlib-toolkit.market-monitor",
+        command="qfinlib-toolkit.market-monitor.equity_monitor",
         description="Launch equity market monitor dashboard (port 8051).",
         runner=market_monitor_main,
     ),
@@ -41,13 +34,13 @@ DASHBOARDS = [
     ),
     DashboardApp(
         name="Trade Pricing",
-        command="qfinlib-toolkit.trade-pricing",
+        command="qfinlib-toolkit.trade-pricing.trade-pricer",
         description="Launch trade pricing dashboard (port 8052).",
         runner=trade_pricing_main,
     ),
     DashboardApp(
         name="Strategy Lab",
-        command="qfinlib-toolkit.strategy-lab",
+        command="qfinlib-toolkit.strategy-lab.strategy-generator",
         description="Launch strategy lab dashboard (port 8053).",
         runner=strategy_lab_main,
     ),
@@ -72,7 +65,7 @@ def _render_menu(stdscr: curses.window, selected_index: int) -> None:
     stdscr.addstr(1, 0, "Use ↑/↓ to move and Enter to launch.")
 
     for idx, app in enumerate(DASHBOARDS):
-        prefix = "➤" if idx == selected_index else " "
+        prefix = ">" if idx == selected_index else " "
         style = curses.A_REVERSE if idx == selected_index else curses.A_NORMAL
         stdscr.addstr(3 + idx, 0, f"{prefix} {app.name} - {app.command}", style)
 
