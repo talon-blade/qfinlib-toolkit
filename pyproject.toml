@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qfinlib-toolkit"
-version = "0.1.0"
+version = "0.2.0"
 description = "qfinlib-powered dashboard toolkit with market monitoring, pricing, and strategy tools"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -25,11 +25,10 @@ Homepage = "https://github.com/example/qfinlib-toolkit"
 
 [project.scripts]
 "qfinlib-toolkit" = "apps.cli:main"
-"qfinlib-toolkit.portal" = "apps.portal.__main__:main"
-"qfinlib-toolkit.market-monitor" = "apps.market_monitor.__main__:main"
+"qfinlib-toolkit.market-monitor.equity_monitor" = "apps.market_monitor.__main__:main"
 "qfinlib-toolkit.market-monitor.swap-rate-monitor" = "apps.market_monitor.swap_rate_monitor:main"
-"qfinlib-toolkit.trade-pricing" = "apps.trade_pricing.__main__:main"
-"qfinlib-toolkit.strategy-lab" = "apps.strategy_lab.__main__:main"
+"qfinlib-toolkit.trade-pricing.trade-pricer" = "apps.trade_pricing.__main__:main"
+"qfinlib-toolkit.strategy-lab.strategy-generator" = "apps.strategy_lab.__main__:main"
 
 [tool.setuptools]
 include-package-data = false

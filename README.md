@@ -21,11 +21,10 @@ The browser supports ↑/↓ keys and Enter to launch the selected app.
 You can also start each dashboard directly as a command:
 
 ```bash
-qfinlib-toolkit.portal
-qfinlib-toolkit.market-monitor
+qfinlib-toolkit.market-monitor.equity_monitor
 qfinlib-toolkit.market-monitor.swap-rate-monitor
-qfinlib-toolkit.trade-pricing
-qfinlib-toolkit.strategy-lab
+qfinlib-toolkit.trade-pricing.trade-pricer
+qfinlib-toolkit.strategy-lab.strategy-generator
 ```
 
 When command usage fails (for example, unsupported flags), the CLI prints a hint to use
@@ -52,6 +51,6 @@ GitHub Actions is configured so that every pushed tag matching `v*` builds the p
 Example:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.2.0
+git push origin v0.2.0
 ```
