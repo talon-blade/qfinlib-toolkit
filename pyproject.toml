@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qfinlib-toolkit"
-version = "0.1.0"
+version = "1.0.0"
 description = "qfinlib-powered dashboard toolkit with market monitoring, pricing, and strategy tools"
 readme = "README.md"
 requires-python = ">=3.10"
