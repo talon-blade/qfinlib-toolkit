@@ -114,3 +114,26 @@ def run_moving_average_backtest(symbol: str, periods: int = 250, fast: int = 20,
         "sharpe": (prices["pnl"].mean() * 252) / (prices["pnl"].std() * np.sqrt(252) + 1e-9),
     }
     return BacktestResult(equity_curve=prices["equity"], trades=trades, metrics=metrics)
+
+
+def load_swap_curve(currency: str = "USD") -> pd.DataFrame:
+    """Return a basic swap curve for dashboarding."""
+
+    market = _market_snapshot()
+    tenors_years = np.array([1, 2, 3, 5, 7, 10, 20, 30], dtype=float)
+
+    if market:
+        base_rate = float(market.data.get("discount_rate", market.data.get("forward_rate", 0.025)))
+        slope = float(market.data.get("volatility", 0.2)) * 0.02
+    else:
+        base_rate = 0.02
+        slope = 0.004
+
+    curve = base_rate + slope * np.log1p(tenors_years)
+    curve = curve + 0.0005 * np.sin(tenors_years)
+
+    return pd.DataFrame({
+        "currency": currency,
+        "tenor_years": tenors_years,
+        "swap_rate": curve,
+    })

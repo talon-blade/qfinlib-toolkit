@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qfinlib-toolkit"
+version = "0.1.0"
+description = "qfinlib-powered dashboard toolkit with market monitoring, pricing, and strategy tools"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "qfinlib toolkit contributors" }]
+dependencies = [
+  "qfinlib",
+  "pandas",
+  "numpy",
+  "dash",
+  "plotly",
+  "scipy",
+  "gunicorn",
+]
+
+[project.urls]
+Homepage = "https://github.com/example/qfinlib-toolkit"
+
+[project.scripts]
+"qfinlib-toolkit.portal" = "apps.portal.__main__:main"
+"qfinlib-toolkit.market-monitor" = "apps.market_monitor.__main__:main"
+"qfinlib-toolkit.market-monitor.swap-rate-monitor" = "apps.market_monitor.swap_rate_monitor:main"
+"qfinlib-toolkit.trade-pricing" = "apps.trade_pricing.__main__:main"
+"qfinlib-toolkit.strategy-lab" = "apps.strategy_lab.__main__:main"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+include = ["apps*"]

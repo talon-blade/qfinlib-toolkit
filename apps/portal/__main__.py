@@ -69,6 +69,10 @@ app.css.append_css(
 )
 
 
-if __name__ == "__main__":
+def main() -> None:
     port = int(os.getenv("PORT", "8050"))
     app.run(host="0.0.0.0", port=port, debug=False)
+
+
+if __name__ == "__main__":
+    main()
